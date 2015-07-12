@@ -62,6 +62,7 @@
 #include <net/bpf.h>
 #include <net/kpi_protocol.h>
 #include <net/ethernet.h>
+
 #ifdef OSX_10_5
 #include <netat/appletalk.h>
 #endif
@@ -1002,7 +1003,7 @@ gre_ioctl(ifnet_t ifp, unsigned long cmd, void *data)
             bcopy((caddr_t)&sc->gre_pdst, (caddr_t)&ifr->ifr_addr, sc->gre_pdst.sa_len);
             break;
         case SIOCSIFPHYADDR:
-        case SIOCSLIFPHYADDR:
+//        case SIOCSLIFPHYADDR:
 #ifdef DEBUG
             printf("%s: SIOCSIFPHYADDR, SIOCSIFPHYADDR_IN6, SIOCSLIFPHYADDR %lu \n", __FUNCTION__, cmd & 0xff);
 #endif
@@ -1017,6 +1018,7 @@ gre_ioctl(ifnet_t ifp, unsigned long cmd, void *data)
                     if (src->sa_len != sizeof(struct sockaddr_in) || dst->sa_len != sizeof(struct sockaddr_in))
                         return EINVAL;
                     break;
+#if 0
                 case SIOCSLIFPHYADDR:
                     src = (struct sockaddr *) \
                             &(((struct if_laddrreq *)data)->addr);
@@ -1027,6 +1029,7 @@ gre_ioctl(ifnet_t ifp, unsigned long cmd, void *data)
                     if (src->sa_family != dst->sa_family || src->sa_len != dst->sa_len)
                         return EINVAL;
                     break;
+#endif
                 default:
                     return EAFNOSUPPORT;
             }
@@ -1118,10 +1121,11 @@ recompute:
             bzero(&sc->gre_pdst, sizeof(sc->gre_pdst));
             bzero(&sc->gre_psrc, sizeof(sc->gre_psrc));
             break;
+#if 0  //commets lines
         case SIOCGLIFPHYADDR:
-#ifdef DEBUG
+//#ifdef DEBUG
             printf("%s: SIOCGLIFPHYADDR\n", __FUNCTION__);
-#endif
+//#endif
             if (sc->gre_psrc.sa_family == AF_UNSPEC || \
                 sc->gre_pdst.sa_family == AF_UNSPEC) {
                 return EADDRNOTAVAIL;
@@ -1143,6 +1147,7 @@ recompute:
                 return EINVAL;
             bcopy((caddr_t)src, (caddr_t)dst, src->sa_len);
             break;
+#endif
         case SIOCGIFPSRCADDR:
         case SIOCGIFPSRCADDR_IN6:
 #ifdef DEBUG
